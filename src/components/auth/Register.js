@@ -1,8 +1,11 @@
 import React, { Fragment, useState } from "react";
+import { connect } from "react-redux";
 import { Link } from "react-router-dom";
-//import axios from "axios";
+import { setAlert } from "../../actions/alert";
+import { register } from "../../actions/auth";
+import PropTypes from "prop-types";
 
-const Register = () => {
+const Register = ({ setAlert, register }) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -19,30 +22,9 @@ const Register = () => {
   const onSubmit = async (e) => {
     e.preventDefault();
     if (password !== password2) {
-      console.log("Passwords do not match ");
+      setAlert("Passwords do not match", "danger");
     } else {
-      console.log("Success");
-      // const newUser = {
-      //   name,
-      //   email,
-      //   password,
-      // };
-
-      //   try {
-      //     const config = {
-      //       headers: {
-      //         "Content-Type": "application/json",
-      //       },
-      //     };
-
-      //     const body = JSON.stringify(newUser);
-
-      //     const res = await axios.post("/api/users", body, config);
-      //     console.log(res.data);
-      //   } catch (err) {
-      //     console.error(err.response.data);
-      //   }
-      // }
+      register({ name, email, password });
     }
   };
   return (
@@ -57,8 +39,8 @@ const Register = () => {
             type="text"
             name="name"
             value={name}
-            onChange={(e) => onChange(e)}
             required
+            onChange={(e) => onChange(e)}
           />
           <label style={name ? { display: "none" } : {}}>Name</label>
         </div>
@@ -67,6 +49,7 @@ const Register = () => {
             type="email"
             name="email"
             value={email}
+            required
             onChange={(e) => onChange(e)}
           />
           <label style={email ? { display: "none" } : {}}>Email</label>
@@ -81,6 +64,7 @@ const Register = () => {
             name="password"
             minLength="6"
             value={password}
+            required
             onChange={(e) => onChange(e)}
           />
           <label style={password ? { display: "none" } : {}}>Password</label>
@@ -91,6 +75,7 @@ const Register = () => {
             name="password2"
             minLength="6"
             value={password2}
+            required
             onChange={(e) => onChange(e)}
           />
           <label style={password2 ? { display: "none" } : {}}>
@@ -106,4 +91,8 @@ const Register = () => {
   );
 };
 
-export default Register;
+Register.propTypes = {
+  setAlert: PropTypes.func.isRequired,
+  register: PropTypes.func.isRequired,
+};
+export default connect(null, { setAlert, register })(Register);
