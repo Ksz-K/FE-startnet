@@ -253,6 +253,30 @@ img {
 .form .form-group {
   margin: 1.2rem 0;
 }
+form div {
+  position: relative;
+}
+
+form div label {
+  position: absolute;
+  top: 0.5rem;
+  left: 1.25rem;
+  pointer-events: none;
+  color: #8a8a8a;
+  font-size: 1rem;
+  transition: transform 777ms ease-out, font-size 888ms ease-out;
+}
+
+input:focus ~ label {
+  top: 0.4rem;
+  font-size: 0.4rem;
+  letter-spacing: 3px;
+  font-weight: bold;
+}
+
+input:focus {
+  outline: none;
+}
 
 .form .form-text {
   display: block;
