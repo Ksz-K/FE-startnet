@@ -1,7 +1,13 @@
 import axios from "axios";
 import { setAlert } from "./alert";
 
-import { GET_PROFILE, PROFILE_ERROR, UPDATE_PROFILE } from "./types";
+import {
+  GET_PROFILE,
+  PROFILE_ERROR,
+  UPDATE_PROFILE,
+  DELETE_ACCOUNT,
+  CLEAR_PROFILE,
+} from "./types";
 
 //Get current user profile
 export const getCurrentProfile = () => async (dispatch) => {
@@ -69,7 +75,12 @@ export const addExperience = (formData, history) => async (dispatch) => {
         "Content-Type": "application/json",
       },
     };
-    console.log(formData);
+
+    const { current } = formData;
+    if (current) {
+      formData.to = null;
+    }
+
     const res = await axios.put("/api/profile/experience", formData, config);
 
     dispatch({
@@ -96,6 +107,11 @@ export const addEducation = (formData, history) => async (dispatch) => {
         "Content-Type": "application/json",
       },
     };
+
+    const { current } = formData;
+    if (current) {
+      formData.to = null;
+    }
     const res = await axios.put("/api/profile/education", formData, config);
 
     dispatch({
@@ -110,6 +126,91 @@ export const addEducation = (formData, history) => async (dispatch) => {
     const errors = error.response.data.error.split(",");
     if (errors) {
       errors.forEach((error) => dispatch(setAlert(error, "danger")));
+    }
+  }
+};
+
+//Delete experience
+export const deleteExperience = (id) => async (dispatch) => {
+  try {
+    const res = await axios.delete(`/api/profile/experience/${id}`);
+
+    dispatch({
+      type: UPDATE_PROFILE,
+      payload: res.data,
+    });
+
+    dispatch(setAlert("Experience deleted", "dark"));
+  } catch (error) {
+    const errors = error.response.data.error.split(",");
+    if (errors) {
+      errors.forEach((error) => dispatch(setAlert(error, "dark")));
+    }
+
+    dispatch({
+      type: PROFILE_ERROR,
+      payload: {
+        msg: error.response.data.error,
+        status: error.response.status,
+      },
+    });
+  }
+};
+
+//Delete education
+export const deleteEducation = (id) => async (dispatch) => {
+  try {
+    const res = await axios.delete(`/api/profile/education/${id}`);
+
+    dispatch({
+      type: UPDATE_PROFILE,
+      payload: res.data,
+    });
+
+    dispatch(setAlert("Education deleted", "dark"));
+  } catch (error) {
+    const errors = error.response.data.error.split(",");
+    if (errors) {
+      errors.forEach((error) => dispatch(setAlert(error, "dark")));
+    }
+
+    dispatch({
+      type: PROFILE_ERROR,
+      payload: {
+        msg: error.response.data.error,
+        status: error.response.status,
+      },
+    });
+  }
+};
+
+//Delete account & profile
+export const deleteAccount = () => async (dispatch) => {
+  if (window.confirm("Are you sure? This can NOT be undone")) {
+    try {
+      const res = await axios.delete(`/api/profile`);
+
+      dispatch({
+        type: CLEAR_PROFILE,
+      });
+      dispatch({
+        type: DELETE_ACCOUNT,
+      });
+
+      dispatch(setAlert("Your account has been deleted", "dark"));
+    } catch (error) {
+      const errors = error.response.data.error.split(",");
+      if (errors) {
+        errors.forEach((error) => dispatch(setAlert(error, "dark")));
+      }
+
+      dispatch({
+        type: PROFILE_ERROR,
+        payload: {
+          msg: error.response.data.error,
+          status: error.response.status,
+        },
+      });
     }
   }
 };
